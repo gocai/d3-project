@@ -9,3 +9,13 @@ UNSATISFIED
 Other scenes are used to separate and contextualize the gameplay scenes
 
 Offer your player a progression of physics-based challenges, interspersed with moments of rest and reflection.
+
+ASSETS USED CREDITS:
+
+https://npkuu.itch.io/pixelgui
+
+https://foozlecc.itch.io/void-environment-pack
+
+https://foozlecc.itch.io/void-main-ship
+
+https://wenrexa.itch.io/laser2020
