@@ -299,7 +299,7 @@ class Start3Scene extends Phaser.Scene{
     }
     create(){
         this.background1 = this.add.image(0,300,"menubg") .setOrigin(.5, .5).setScale(2);
-        this.add.image(this.game.renderer.width / 2, 200 -100, "secondlevel").setDepth(1);
+        this.add.image(this.game.renderer.width / 2, 200 -100, "thirdlevel").setDepth(1);
         this.add.image((this.game.renderer.width / 2) - 50, 400 - 100, "enemycount").setDepth(1);
         this.add.text((this.game.renderer.width / 2) + 150, 355 - 100, " : 1").setDepth(1).setScale(5);
         this.play1 = this.add.sprite(this.game.renderer.width / 2, 500, "playicon").setScale(.3).setInteractive();
