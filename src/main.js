@@ -13,25 +13,26 @@ class LoadingScene extends Phaser.Scene{
         this.load.image("levelbg", "/assets/Backgrounds/PNGs/Condesed/Starry background  - Layer 02 - Stars.png");
         this.load.image("playbutton", "assets/PlayBtn.png");
         this.load.image("titlecard", "./assets/title.png");
-        this.load.image("spaceship", "./assets/Main Ship - Bases/PNGs/Main Ship - Base - Full health.png");
-        this.load.image("laser","./assets/01.png");
+        this.load.image("spaceship", "./assets/ship.png");
         this.load.image("enemycount", "./assets/enemies.png");
         this.load.image("firstlevel", "./assets/level1.png");
         this.load.image("secondlevel", "./assets/level 2.png");
         this.load.image("thirdlevel", "./assets/level 3.png");
-        
         this.load.image("playicon", "./assets/PlayIconClick.png");
-        this.load.image("asteroid", "./assets/Asteroids/PNGs/Asteroid 01 - Base.png");
+        this.load.image("asteroid", "./assets/assteroid.png");
        this.load.image("scoreboard", "./assets/score.png");
-      /*  let loadbar = this.add.graphics({
-            fillStyle: {
-                color: 0xffffff
-            }
-        })
-        this.load.on("progress", (percent)=>{
-            loadbar.fillRect(0,this.game.renderer.height / 2, this.game.renderer.width * percent, 50);
-            console.log(percent);
-        })*/
+       this.load.image("exit","./assets/ExitIcon.png");
+      
+
+       this.load.spritesheet("engine","assets/engine.png",{
+        frameWidth:48,
+        frameHeight:48
+    });
+    this.load.spritesheet("bombs","assets/bomb.png",{
+        frameWidth:16,
+        frameHeight:16
+    });
+
     }
     create(){
         this.scene.start(CST.SCENES.MENU);
@@ -85,6 +86,7 @@ class Start1Scene extends Phaser.Scene{
 
 
 class Play1Scene extends Phaser.Scene{
+    
     constructor(){
         super({
             key: CST.SCENES.PLAY1
@@ -92,37 +94,47 @@ class Play1Scene extends Phaser.Scene{
         
     }
     create(){
+        this.anims.create({
+            key:"red",
+            frames:this.anims.generateFrameNumbers("bombs",{
+                start:0,
+                end:3
+            }),
+            frameRate:10,
+            repeat:-1
+        });
+        this.anims.create({
+            key:"engine_anim",
+            frames: this.anims.generateFrameNumbers("engine"),
+            frameRate:20,
+            repeat:-1
+        });
         const bullets = this.physics.add.group();
         function shootBullet(x, y, velocityX, velocityY) {
             // Get a bullet from the bullet group
-            const bullet = bullets.get(x, y, 'laser');
-          
+            const bullet = bullets.get(x, y, 'bombs');
+            
             // Set the velocity of the bullet
             bullet.setVelocity(velocityX, velocityY);
           
-            // Enable collisions between the bullet and other objects
-            bullet.setCollideWorldBounds(true);
-          
+            bullet.play("red");
             // Destroy the bullet when it goes out of bounds
             bullet.on('outOfBounds', function() {
               bullet.destroy();
             });
-            this.time.addEvent({
-                delay: 2000, // Time in milliseconds before the bullet is reset
-                callback: function() {
-                  bullet.disableBody(true, true); // Disable and hide the bullet
-                },
-                callbackScope: this
-              });
             }
         
+
+
         this.add.image(0,300,"menubg") .setOrigin(.5, .5).setScale(2);
         this.add.image(0,300,"levelbg").setOrigin(.5,.5).setScale(1.65);
         this.player = this.physics.add.sprite(400,450,"spaceship").setScale(1.5);
-        this.enemies = this.physics.add.sprite(200,200,"asteroid").setScale(2);
-        
+        this.enemies = this.physics.add.sprite(200,200,"asteroid");
+        this.rocket = this.add.sprite(this.player.x,this.player.y - 1,"engine");
+        this.player.setCollideWorldBounds(true);
+        this.rocket.play("engine_anim");
         this.input.on('pointerdown',()=>{
-            shootBullet(this.player.x,this.player.y,0,-200);
+            shootBullet(this.player.x,this.player.y,0,-400);
         
         });
         this.physics.add.collider(bullets, this.enemies, collisionHandler, null, this);
@@ -144,16 +156,20 @@ class Play1Scene extends Phaser.Scene{
     
     update(time,delta){
         if(this.keyboard.D.isDown == true){
-        this.player.x = this.player.x + 164 * (delta / 1000);
+        this.player.x = this.player.x + 264 * (delta / 1000);
+        this.rocket.x = this.player.x;
         }
         if(this.keyboard.A.isDown == true){
-            this.player.x = this.player.x + -164 * (delta / 1000);
+            this.player.x = this.player.x + -264 * (delta / 1000);
+            this.rocket.x = this.player.x;
          }
         if(this.keyboard.W.isDown == true){
-            this.player.y = this.player.y + -164 * (delta / 1000);
+            this.player.y = this.player.y + -264 * (delta / 1000);
+            this.rocket.y = this.player.y;
         }
         if(this.keyboard.S.isDown == true){
-            this.player.y = this.player.y + 164 * (delta / 1000);
+            this.player.y = this.player.y + 264 * (delta / 1000);
+            this.rocket.y = this.player.y;
         }
         
 }
@@ -205,41 +221,52 @@ class Play2Scene extends Phaser.Scene{
         
     }
     create(){
+        this.anims.create({
+            key:"red",
+            frames:this.anims.generateFrameNumbers("bombs",{
+                start:0,
+                end:3
+            }),
+            frameRate:10,
+            repeat:-1
+        });
+        this.anims.create({
+            key:"engine_anim",
+            frames: this.anims.generateFrameNumbers("engine"),
+            frameRate:20,
+            repeat:-1
+        });
         const bullets = this.physics.add.group();
         function shootBullet(x, y, velocityX, velocityY) {
             // Get a bullet from the bullet group
-            const bullet = bullets.get(x, y, 'laser');
-          
+            const bullet = bullets.get(x, y, 'bombs');
+            
             // Set the velocity of the bullet
             bullet.setVelocity(velocityX, velocityY);
           
-            // Enable collisions between the bullet and other objects
-            bullet.setCollideWorldBounds(true);
-          
+            bullet.play("red");
             // Destroy the bullet when it goes out of bounds
             bullet.on('outOfBounds', function() {
               bullet.destroy();
             });
-            this.time.addEvent({
-                delay: 2000, // Time in milliseconds before the bullet is reset
-                callback: function() {
-                  bullet.disableBody(true, true); // Disable and hide the bullet
-                },
-                callbackScope: this
-              });
             }
+        
+        
         
         this.add.image(0,300,"menubg") .setOrigin(.5, .5).setScale(2);
         this.add.image(0,300,"levelbg").setOrigin(.5,.5).setScale(1.65);
         this.player = this.physics.add.sprite(400,450,"spaceship").setScale(1.5);
-        this.enemies = this.physics.add.sprite(200,200,"asteroid").setScale(2).setVelocityX(200)
-        .setCollideWorldBounds(true)
-        .setBounce(1, 0);
+        this.enemy = this.physics.add.sprite(200,200,"asteroid").setVelocityX(300);
+        this.rocket = this.add.sprite(this.player.x,this.player.y - 1,"engine");
+        this.player.setCollideWorldBounds(true);
+        this.enemy.setCollideWorldBounds(true);
+        this.enemy.setBounce(1);
+        this.rocket.play("engine_anim");
         this.input.on('pointerdown',()=>{
-            shootBullet(this.player.x,this.player.y,0,-200);
+            shootBullet(this.player.x,this.player.y,0,-400);
         
         });
-        this.physics.add.collider(bullets, this.enemies, collisionHandler, null, this);
+        this.physics.add.collider(bullets, this.enemy, collisionHandler, null, this);
         function collisionHandler(object1, object2) {
             object1.destroy();
             object2.destroy();
@@ -258,17 +285,21 @@ class Play2Scene extends Phaser.Scene{
     
     update(time,delta){
         if(this.keyboard.D.isDown == true){
-        this.player.x = this.player.x + 164 * (delta / 1000);
-        }
-        if(this.keyboard.A.isDown == true){
-            this.player.x = this.player.x + -164 * (delta / 1000);
-         }
-        if(this.keyboard.W.isDown == true){
-            this.player.y = this.player.y + -164 * (delta / 1000);
-        }
-        if(this.keyboard.S.isDown == true){
-            this.player.y = this.player.y + 164 * (delta / 1000);
-        }
+            this.player.x = this.player.x + 264 * (delta / 1000);
+            this.rocket.x = this.player.x;
+            }
+            if(this.keyboard.A.isDown == true){
+                this.player.x = this.player.x + -264 * (delta / 1000);
+                this.rocket.x = this.player.x;
+             }
+            if(this.keyboard.W.isDown == true){
+                this.player.y = this.player.y + -264 * (delta / 1000);
+                this.rocket.y = this.player.y;
+            }
+            if(this.keyboard.S.isDown == true){
+                this.player.y = this.player.y + 264 * (delta / 1000);
+                this.rocket.y = this.player.y;
+            }
         
 }
 }
@@ -317,41 +348,56 @@ class Play3Scene extends Phaser.Scene{
         
     }
     create(){
+        this.anims.create({
+            key:"red",
+            frames:this.anims.generateFrameNumbers("bombs",{
+                start:0,
+                end:3
+            }),
+            frameRate:10,
+            repeat:-1
+        });
+        this.anims.create({
+            key:"engine_anim",
+            frames: this.anims.generateFrameNumbers("engine"),
+            frameRate:20,
+            repeat:-1
+        });
         const bullets = this.physics.add.group();
         function shootBullet(x, y, velocityX, velocityY) {
             // Get a bullet from the bullet group
-            const bullet = bullets.get(x, y, 'laser');
-          
+            const bullet = bullets.get(x, y, 'bombs');
+            
             // Set the velocity of the bullet
             bullet.setVelocity(velocityX, velocityY);
           
-            // Enable collisions between the bullet and other objects
-            bullet.setCollideWorldBounds(true);
-          
+            bullet.play("red");
             // Destroy the bullet when it goes out of bounds
             bullet.on('outOfBounds', function() {
               bullet.destroy();
             });
-            this.time.addEvent({
-                delay: 2000, // Time in milliseconds before the bullet is reset
-                callback: function() {
-                  bullet.disableBody(true, true); // Disable and hide the bullet
-                },
-                callbackScope: this
-              });
             }
+        
+        
         
         this.add.image(0,300,"menubg") .setOrigin(.5, .5).setScale(2);
         this.add.image(0,300,"levelbg").setOrigin(.5,.5).setScale(1.65);
         this.player = this.physics.add.sprite(400,450,"spaceship").setScale(1.5);
-        this.enemies = this.physics.add.sprite(200,200,"asteroid").setScale(2).setVelocityX(600)
+        this.enemy = this.physics.add.sprite(200,200,"asteroid").setScale(2).setVelocityX(600)
         .setCollideWorldBounds(true)
-        .setBounce(1, 0);
+        .setBounce(1, 0)
+        .setVelocityY(100);
+        this.rocket = this.add.sprite(this.player.x,this.player.y - 1,"engine");
+        this.player.setCollideWorldBounds(true);
+        this.enemy.setCollideWorldBounds(true);
+        this.enemy.setBounce(1);
+        this.rocket.play("engine_anim");
+        
         this.input.on('pointerdown',()=>{
-            shootBullet(this.player.x,this.player.y,0,-200);
+            shootBullet(this.player.x,this.player.y,0,-400);
         
         });
-        this.physics.add.collider(bullets, this.enemies, collisionHandler, null, this);
+        this.physics.add.collider(bullets, this.enemy, collisionHandler, null, this);
         function collisionHandler(object1, object2) {
             object1.destroy();
             object2.destroy();
@@ -360,6 +406,16 @@ class Play3Scene extends Phaser.Scene{
                 this.scene.start(CST.SCENES.END3);
         })
         }
+        this.physics.add.collider(this.player,this.enemy,death,null,this);
+        function death(object3,object4){
+            object3.destroy();
+            object4.destroy();
+            this.play8 = this.add.sprite(100,400, "exit").setScale(.3).setInteractive();
+            this.play8.on("pointerdown",()=>{
+                this.scene.start(CST.SCENES.START3);
+            })
+        }
+        
         
         
         
@@ -370,17 +426,21 @@ class Play3Scene extends Phaser.Scene{
     
     update(time,delta){
         if(this.keyboard.D.isDown == true){
-        this.player.x = this.player.x + 164 * (delta / 1000);
-        }
-        if(this.keyboard.A.isDown == true){
-            this.player.x = this.player.x + -164 * (delta / 1000);
-         }
-        if(this.keyboard.W.isDown == true){
-            this.player.y = this.player.y + -164 * (delta / 1000);
-        }
-        if(this.keyboard.S.isDown == true){
-            this.player.y = this.player.y + 164 * (delta / 1000);
-        }
+            this.player.x = this.player.x + 264 * (delta / 1000);
+            this.rocket.x = this.player.x;
+            }
+            if(this.keyboard.A.isDown == true){
+                this.player.x = this.player.x + -264 * (delta / 1000);
+                this.rocket.x = this.player.x;
+             }
+            if(this.keyboard.W.isDown == true){
+                this.player.y = this.player.y + -264 * (delta / 1000);
+                this.rocket.y = this.player.y;
+            }
+            if(this.keyboard.S.isDown == true){
+                this.player.y = this.player.y + 264 * (delta / 1000);
+                this.rocket.y = this.player.y;
+            }
         
 }
 }
@@ -404,7 +464,7 @@ class End3Scene extends Phaser.Scene{
 
 let game = new Phaser.Game({
     width: 800,
-    height: 600,
+    height:600,
     scene:[
         LoadingScene,MenuScene, Start1Scene, Play1Scene,End1Scene,Start2Scene,Play2Scene,End2Scene, Start3Scene,Play3Scene,End3Scene
     ],
