@@ -12,6 +12,11 @@ scenes before and after levels with score, and enemy count
 Offer your player a progression of physics-based challenges, interspersed with moments of rest and reflection.
 player is challenged by faster asteroids
 
+Controls:
+WASD to move
+Click to shoot!
+Shoot the asteroids.
+
 ASSETS USED CREDITS:
 
 https://npkuu.itch.io/pixelgui
